@@ -2,7 +2,7 @@ import http.server
 import socketserver
 
 ADDR = ""
-PORT = 8003
+PORT = 8007
 
 handler = http.server.SimpleHTTPRequestHandler
 handler.extensions_map={

@@ -33,6 +33,7 @@ function initializeContext() {
     gl.lineWidth(1.0);
 
     // TODO: Enable depth testing
+    gl.enable(gl.DEPTH_TEST);
 
     logMessage("WebGL initialized.");
 }
@@ -60,6 +61,8 @@ async function setup() {
     createVertexArrayObjects();
 
     // TODO: Initialize angle and angularSpeed.
+    angle = 0.0;
+    angularSpeed = 0.0;
 
     // Draw!
     requestAnimationFrame(render)
@@ -283,24 +286,36 @@ function setUniformVariables() {
     
     var model = matrix;
     // TODO: Create a rotation matrix using the angle
+    model = rotate(angle, [0.0, 1.0, 0.0]);
 
     // TODO: Define a camera location
+    var eye = vec3(2, 2, 2);
 
     // TODO: Define the target position
+    var target = vec3(0, 0, 0);
 
     // TODO: Define the up direction
+    var up = vec3(0, 1, 0);
 
     // TODO: Create view matrix.
-
+    var view = lookAt(
+        eye,
+        target,
+        up
+    );
 
 
     // TODO: Calculate the aspect ratio.
+    var aspect = canvas.width / canvas.height;
 
     // TODO: Create a projection matrix.
+    var projection = perspective(45.0, aspect, 0.1, 1000.0);
 
     // TODO: Multiply the matrices before sending to the shader.
+    var transform = mult(projection, mult(view, model));
 
     // TODO: Set the data of the transformation matrix.
+    gl.uniformMatrix4fv(transform_loc, false, flatten(transform));
 
     // logMessage("Set uniform variables.")
 }
@@ -341,32 +356,45 @@ function createVertexArrayObjects() {
 var previousTimestamp;
 function updateAngle(timestamp) {
     // TODO: Initialize previousTimestamp the first time this is called.
+    if (previousTimestamp === undefined) {
+        // console.log("previous" + previousTimestamp);
+        previousTimestamp = timestamp;
+    }
 
     // TODO: Calculate the change in time in seconds
+    var delta = (timestamp - previousTimestamp) / 1000;
 
     // TODO: Update the angle using angularSpeed and the change in time
+    angle += angularSpeed*delta;
+    angle -= Math.floor(angle/360.0)*360.0;
 
     // TODO: Decrease the angular speed using the change in time
+    angularSpeed = Math.max(angularSpeed - 100.0*delta, 0.0);
 
     // TODO: Update previousTimestamp
+    previousTimestamp = timestamp;
 
 }
 
 // Draws the vertex data.
 function render(timestamp) {
     // TODO: Clear the color and depth buffers
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Set the rendering state to use the shader program
     gl.useProgram(prog);
 
     // TODO: Call updateAngle
+    updateAngle(timestamp)
 
     // TODO: Update uniforms
+    setUniformVariables();
 
     // Bind the VAO
     gl.bindVertexArray(vao);
 
     // TODO: Draw the correct number of vertices using the TRIANGLES mode.
+    gl.drawArrays(gl.TRIANGLES, 0, positions.length/3);
 
     // Call this function repeatedly with requestAnimationFrame.
     requestAnimationFrame(render);
@@ -396,6 +424,7 @@ function setEventListeners(canvas) {
         document.getElementById("click_count").innerText = click_count;
 
         // TODO: Increase the rate of rotation
+        angularSpeed += 50;
         
     })
 }

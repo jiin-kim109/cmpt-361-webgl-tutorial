@@ -68,12 +68,21 @@ window.onload = setup;
 // Vertex position is in the format [x0, y0, z0, x1, y1, ...]
 // Note that a vertex can have multiple attributes (ex. colors, normals, texture coordinates, etc.)
 var positions = [
-    -0.8, 0.6, 0,
-    0.8, 0.6, 0,
-    0.8, -0.6, 0,
-    -0.8, 0.6, 0,
-    0.8, -0.6, 0,
-    -0.8, -0.6, 0
+    vec2(-0.8, 0.6),
+    vec2(0.8, 0.6),
+    vec2(0.8, -0.6),
+    vec2(-0.8, 0.6),
+    vec2(0.8, -0.6),
+    vec2(-0.8, -0.6),
+];
+
+var positions2 = [
+    vec2(-0.4, 0.6),
+    vec2(0.4, 0.6),
+    vec2(0.4, -0.6),
+    vec2(-0.4, 0.6),
+    vec2(0.4, -0.6),
+    vec2(-0.4, -0.6),
 ];
 
 // Vertex color data in the format [r0, g0, b0, a0, r1, g1, ...].
@@ -83,7 +92,7 @@ var colors = [
     1, 0, 0, 1, // red
     0, 1, 0, 1, // green
     0, 0, 1, 1, // blue
-    1, 0, 0, 1, // red
+    0, 0, 0, 1, // red
     0, 0, 1, 1, // blue
     1, 0, 1, 1 // purple
 ];
@@ -262,7 +271,7 @@ function createVertexArrayObjects() {
     gl.bindBuffer( gl.ARRAY_BUFFER, position_buffer );
 
     // TODO: Specify the layout of the data using vertexAttribPointer.
-    gl.vertexAttribPointer( vPositionLoc, 3, gl.FLOAT, false, 0, 0 ); // read from ARRAY_BUFFER
+    gl.vertexAttribPointer( vPositionLoc, 2, gl.FLOAT, false, 0, 0 ); // read from ARRAY_BUFFER
 
     // TODO: Enable this vertex attribute.
     gl.enableVertexAttribArray( vPositionLoc );
@@ -293,7 +302,14 @@ function render() {
         gl.bindVertexArray(vao);
 
         // TODO: Draw 6 vertices using the TRIANGLES mode.
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.drawArrays(gl.TRIANGLES, 3, 6);
+
+        gl.clear( gl.COLOR_BUFFER_BIT );
+        gl.bindBuffer( gl.ARRAY_BUFFER, position_buffer );
+        gl.bufferData( gl.ARRAY_BUFFER, flatten(positions2), gl.STATIC_DRAW ); 
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.drawArrays(gl.TRIANGLES, 3, 6);
 
         logMessage("Rendered to the screen!");
 
