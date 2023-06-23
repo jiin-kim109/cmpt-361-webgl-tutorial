@@ -137,7 +137,6 @@ function render(gl) {
     const objectsToDraw = objectManager.allObjects();
     let idx = 0;
     for (const object of objectsToDraw) {
-        console.log(object.getTransformMatrix());
         setUniformVariables(gl, object.getTransformMatrix());
         gl.drawArrays(gl.TRIANGLES, idx, idx + object.numOfVertices());
         idx += object.numOfVertices();
